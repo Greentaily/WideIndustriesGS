@@ -21,15 +21,15 @@
 require("version.nut");
 
 class FMainClass extends GSInfo {
-	function GetAuthor()		{ return "[Insert your name here]"; }
-	function GetName()			{ return "MinimalGS"; }
-	function GetDescription() 	{ return "Minimal GS is a Game Script boilerplate"; }
+	function GetAuthor()		{ return "Greentail"; }
+	function GetName()			{ return "WideIndustriesGS"; }
+	function GetDescription() 	{ return "Wide Industries is a script that makes served industries multiply as their production grows"; }
 	function GetVersion()		{ return SELF_VERSION; }
-	function GetDate()			{ return "2013-11-05"; }
+	function GetDate()			{ return "2020-11-05"; }
 	function CreateInstance()	{ return "MainClass"; }
-	function GetShortName()		{ return "MINI"; } // Replace this with your own unique 4 letter string
-	function GetAPIVersion()	{ return "1.2"; }
-	function GetURL()			{ return ""; }
+	function GetShortName()		{ return "WIGS"; }
+	function GetAPIVersion()	{ return "1.9"; }
+	function GetURL()			{ return "https://github.com/Greentaily/WideIndustriesGS"; }
 
 	function GetSettings() {
 		AddSetting({name = "log_level", description = "Debug: Log level (higher = print more)", easy_value = 3, medium_value = 3, hard_value = 3, custom_value = 3, flags = CONFIG_INGAME, min_value = 1, max_value = 3});
