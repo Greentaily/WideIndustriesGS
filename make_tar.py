@@ -30,5 +30,5 @@ dir_name = gs_pack_name + "-v" + version
 tar_name = dir_name + ".tar"
 os.system("mkdir " + dir_name);
 os.system("cp -Ra *.nut readme.txt license.txt changelog.txt lang " + dir_name);
-os.system("tar -cf " + tar_name + " " + dir_name);
+os.system("tar -vcf " + tar_name + " " + dir_name);
 os.system("rm -r " + dir_name);
