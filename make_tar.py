@@ -8,7 +8,7 @@ import re
 # ----------------------------------
 
 # Game Script name
-gs_name = "Minimal GS"
+gs_name = "Wide Industries GS"
 gs_pack_name = gs_name.replace(" ", "-")
 
 # ----------------------------------
