@@ -22,7 +22,7 @@ require("version.nut");
 
 class FMainClass extends GSInfo {
 	function GetAuthor()		{ return "Greentail"; }
-	function GetName()			{ return "WideIndustriesGS"; }
+	function GetName()			{ return "Wide Industries GS"; }
 	function GetDescription() 	{ return "Wide Industries is a script that makes served industries multiply as their production grows"; }
 	function GetVersion()		{ return SELF_VERSION; }
 	function GetDate()			{ return "2020-11-05"; }
