@@ -56,6 +56,11 @@ class MainClass extends GSController
 	_auxiliary_industries = null;
 
 	_production_threshold = null;
+	_production_chance = null;
+	_auxiliary_limit = null;
+	_grid_spacing = null;
+	_grow_processing_industries = null;
+
 
 	/*
 	 * This method is called when your GS is constructed.
@@ -72,7 +77,12 @@ class MainClass extends GSController
 
 		this._industry_list = null;
 		this._auxiliary_industries = null;
+
 		this._production_threshold = null;
+		this._production_chance = null;
+		this._auxiliary_limit = null;
+		this._grid_spacing = null;
+		this._grow_processing_industries = null;
 	}
 }
 
@@ -101,6 +111,8 @@ function MainClass::Start()
 
 	// Game has now started and if it is a single player game,
 	// company 0 exist and is the human company.
+
+	Log.Info("Gamescript started.", Log.LVL_INFO); 
 
 	// Main Game Script loop
 	local last_loop_date = GSDate.GetCurrentDate();
@@ -140,6 +152,8 @@ function MainClass::Start()
  */
 function MainClass::Init()
 {
+
+
 	if (this._loaded_data != null) {
 		this._industry_list = this._loaded_data.rawget("industry_list");
 		this._auxiliary_industries = this._loaded_data.rawget("auxiliary_industries");
@@ -148,8 +162,11 @@ function MainClass::Init()
 		this._auxiliary_industries = GSList();
 	}
 
-	this._production_threshold = 256;
-	//this._production_threshold = GSGameSettings.GetValue("");
+	this._production_threshold = GSGameSettings.GetValue("threshold");
+	this._production_chance = GSGameSettings.GetValue("chance");
+	this._auxiliary_limit = GSGameSettings.GetValue("limit");
+	this._grid_spacing = GSGameSettings.GetValue("spacing");
+	this._grow_processing_industries = GSGameSettings.GetValue("grow_processing_industries");
 
 	// Indicate that all data structures has been initialized/restored.
 	this._init_done = true;
