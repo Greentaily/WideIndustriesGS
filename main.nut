@@ -234,7 +234,7 @@ function MainClass::EndOfMonth()
 
 			Log.Info("Trying to grow industry: " + GSIndustry.GetName(id), Log.LVL_INFO);
 
-			if (GSBase.Chance(1, 2)) {
+			if (GSBase.Chance(this._production_chance, 100)) {
 				// TODO: do not run this code for every single tile each time
 				Log.Info("Dice roll passed, trying to build...", Log.LVL_INFO);
 				local center = GSIndustry.GetLocation(id);
