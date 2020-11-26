@@ -52,14 +52,13 @@ class MainClass extends GSController
 	_loaded_from_version = null;
 	_init_done = null;
 
-	_industry_list = null;
-	_auxiliary_industries = null;
+	_industries = null;
 
 	_production_threshold = null;
 	_production_chance = null;
 	_auxiliary_limit = null;
 	_grid_spacing = null;
-	_grow_processing_industries = null;
+	_only_raw_industries = null;
 
 
 	/*
@@ -75,14 +74,13 @@ class MainClass extends GSController
 		this._loaded_data = null;
 		this._loaded_from_version = null;
 
-		this._industry_list = null;
-		this._auxiliary_industries = null;
+		this._industries = null;
 
 		this._production_threshold = null;
 		this._production_chance = null;
 		this._auxiliary_limit = null;
 		this._grid_spacing = null;
-		this._grow_processing_industries = null;
+		this._only_raw_industries = null;
 	}
 }
 
@@ -153,20 +151,14 @@ function MainClass::Start()
 function MainClass::Init()
 {
 
+	if (this._loaded_data != null) this._industries = this._loaded_data.rawget("industries");
+	else this._industries = GSIndustryList();
 
-	if (this._loaded_data != null) {
-		this._industry_list = this._loaded_data.rawget("industry_list");
-		this._auxiliary_industries = this._loaded_data.rawget("auxiliary_industries");
-	} else {
-		this._industry_list = GSIndustryList();
-		this._auxiliary_industries = GSList();
-	}
-
-	this._production_threshold = GSGameSettings.GetValue("threshold");
-	this._production_chance = GSGameSettings.GetValue("chance");
-	this._auxiliary_limit = GSGameSettings.GetValue("limit");
-	this._grid_spacing = GSGameSettings.GetValue("spacing");
-	this._grow_processing_industries = GSGameSettings.GetValue("grow_processing_industries");
+	this._production_threshold = GSController.GetSetting("threshold");
+	this._production_chance = GSController.GetSetting("chance");
+	this._auxiliary_limit = GSController.GetSetting("limit");
+	this._grid_spacing = GSController.GetSetting("spacing");
+	this._only_raw_industries = GSController.GetSetting("_only_raw_industries");
 
 	// Indicate that all data structures has been initialized/restored.
 	this._init_done = true;
@@ -178,7 +170,7 @@ function MainClass::Init()
  */
 function MainClass::HandleEvents()
 {
-	if(GSEventController.IsEventWaiting()) {
+	while (GSEventController.IsEventWaiting()) {
 		local ev = GSEventController.GetNextEvent();
 		if (ev == null) return;
 
@@ -193,8 +185,7 @@ function MainClass::HandleEvents()
 				break;
 			}
 
-			// When an industry opens, add it to the industry list
-			// ignore for now
+			// TODO: When an industry opens, add it to the industry list
 			case GSEvent.ET_INDUSTRY_OPEN: {
 				local industry_event = GSEventIndustryOpen.Convert(ev);
 				local industry_id = industry_event.GetIndustryID();
@@ -212,50 +203,18 @@ function MainClass::HandleEvents()
  */
 function MainClass::EndOfMonth()
 {
-	foreach(id, _ in this._industry_list) {
+	Log.Info("Trying to map and validate...", Log.LVL_DEBUG);
+	local industry_list = this.map_list(this._industries, this.ValidateIndustry);
+	foreach(id, _ in industry_list) {
 		// TODO: skip during economic recession
-		// Skip industries built by the script
-		if (this._auxiliary_industries.HasItem(id)) continue;
 
 		// Skip unserved industries
 		// TODO: change this to percentage of cargo transported
-		if (GSIndustry.GetAmountOfStationsAround(id) < 1) continue;
 
-		local industry_type = GSIndustry.GetIndustryType(id);
-		local produced_cargoes = GSIndustryType.GetProducedCargo(industry_type);
+		// TODO: black hole industries (either ignore or check the amount of provided cargo)
+		// Skip industry if its production does not meet the threshold value
 
-		if (produced_cargoes != null) {
-			// TODO: black hole industries (either ignore or check the amount of provided cargo)
-			// Skip industry if its production does not meet the threshold value
-			foreach (cargo, _ in produced_cargoes) 	{
-				if (GSIndustry.GetLastMonthProduction(id, cargo) < this._production_threshold) return;
-			}
-
-			Log.Info("Trying to grow industry: " + GSIndustry.GetName(id), Log.LVL_INFO);
-
-			if (GSBase.Chance(1, 2)) {
-				// TODO: do not run this code for every single tile each time
-				Log.Info("Dice roll passed, trying to build...", Log.LVL_INFO);
-				local center = GSIndustry.GetLocation(id);
-				local rect = Tile.MakeTileRectAroundTile(center, 1);
-				// TODO: try and insert free space
-				for (local i = 0; i < 6; ++i) {
-					foreach (tile, _ in rect) {
-						local new_industry;
-						try { new_industry = GSIndustryType.BuildIndustry(industry_type, tile); }
-						catch (exception) { new_industry = false; }
-						if (new_industry) {
-							Log.Info("Successfully built an auxiliary industry!", Log.LVL_INFO);
-							return;
-						}
-
-					}
-					rect = Tile.GrowTileRect(rect, 1);
-				}
-				Log.Info("Unable to build! Likely not enough free space.", Log.LVL_INFO);
-			}
-			else Log.Info("No luck this time!", Log.LVL_INFO); 
-		}
+		this.GrowIndustry(id);
 	}
 }
 
@@ -264,6 +223,62 @@ function MainClass::EndOfMonth()
  */
 function MainClass::EndOfYear()
 {
+}
+
+/*
+ * This method is used to create of an instance of GSList containing
+ * id of industries that can grow.
+ */
+function MainClass::ValidateIndustry(id)
+{
+	/*valid = GSList();
+
+	local type = GSIndustry.GetIndustryType(id);
+	local cargoes = GSIndustryType.GetProducedCargo(type);
+
+		// An industry may be neither processing nor raw.
+		// Examples are: power plant, bank, tropic lumber mills.
+	    if (this._only_raw_industries && !GSIndustryType.IsRawIndustry(type)) continue;
+	}*/
+	
+	return true;
+
+	/*foreach (cargo, _ in cargoes) {
+		if (GSIndustry.GetLastMonthProduction(id, cargo) < this._production_threshold) return valid;
+	}*/
+
+}
+
+/*
+ * This method will try and grow the industry with the id passed as parameter.
+ * It does not test whether the id is valid and whether the industry exists.
+ */
+function MainClass::GrowIndustry(id)
+{
+	Log.Info("Trying to grow industry: " + GSIndustry.GetName(id), Log.LVL_INFO);
+
+	if (GSBase.Chance(this._production_chance, 100)) {
+		// TODO: do not run this code for every single tile each time
+		Log.Info("Dice roll passed, trying to build...", Log.LVL_INFO);
+		local center = GSIndustry.GetLocation(id);
+		local rect = Tile.MakeTileRectAroundTile(center, 1);
+		// TODO: try and insert free space
+		for (local i = 0; i < 16; i = i + 1) {
+			foreach (tile, _ in rect) {
+				local new_industry;
+				local industry_type = GSIndustry.GetIndustryType(id);
+				try { new_industry = GSIndustryType.BuildIndustry(industry_type, tile); }
+				catch (exception) { new_industry = false; }
+				if (new_industry) {
+					Log.Info("Successfully built an auxiliary industry!", Log.LVL_INFO);
+					return;
+				}
+			}
+			rect = Tile.GrowTileRect(rect, 1);
+		}
+		Log.Info("Unable to build! Likely not enough free space.", Log.LVL_INFO);
+	}
+	else Log.Info("No luck this time!", Log.LVL_INFO); 
 }
 
 /*
@@ -306,4 +321,19 @@ function MainClass::Load(version, tbl)
 	}
 
 	this._loaded_from_version = version;
+}
+
+/*
+ * Map() implementation for GSList
+ *
+ */
+function MainClass::map_list(list, func)
+{
+	local new_list = GSList();
+	local item = list.Begin();
+	while (!list.IsEnd()) {
+		if (func(item)) new_list.AddItem(item, 0);
+		item = list.Next();
+	}
+	return new_list;
 }
