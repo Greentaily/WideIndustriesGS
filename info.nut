@@ -39,7 +39,8 @@ class FMainClass extends GSInfo {
 		AddSetting({name = "chance", description = "Probability of growth (percent)", easy_value = 4, medium_value = 2, hard_value = 1, custom_value = 4, flags = CONFIG_NONE, min_value = 1, max_value = 100});
 		AddSetting({name = "limit", description = "Build a maximum of this many auxiliaries per industry", easy_value = 6, medium_value = 6, hard_value = 6, custom_value = 6, flags = CONFIG_NONE, min_value = 1, max_value = 99});
 		AddSetting({name = "spacing", description = "Leave this number of tiles between auxiliaries", easy_value = 0, medium_value = 2, hard_value = 4, custom_value = 0, flags = CONFIG_NONE, min_value = 0, max_value = 10});
-		AddSetting({name = "grow_processing_industries", description = "Grow industries that accept cargo", easy_value = 0, medium_value = 0, hard_value = 0, custom_value = 0, flags = CONFIG_BOOLEAN});
+		AddSetting({name = "distance", description = "Maximum distance for auxiliaries", easy_value = 8, medium_value = 8, hard_value = 8, custom_value = 8, flags = CONFIG_NONE, min_value = 4, max_value = 64});
+		AddSetting({name = "only_raw_industries", description = "Only grow raw industries", easy_value = 1, medium_value = 1, hard_value = 1, custom_value = 1, flags = CONFIG_BOOLEAN});
 
 	}
 }
