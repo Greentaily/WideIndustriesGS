@@ -58,6 +58,7 @@ class MainClass extends GSController
 	_production_chance = null;
 	_auxiliary_limit = null;
 	_grid_spacing = null;
+	_max_distance = null;
 	_only_raw_industries = null;
 
 
@@ -80,6 +81,7 @@ class MainClass extends GSController
 		this._production_chance = null;
 		this._auxiliary_limit = null;
 		this._grid_spacing = null;
+		this._max_distance = null;
 		this._only_raw_industries = null;
 	}
 }
@@ -158,6 +160,7 @@ function MainClass::Init()
 	this._production_chance = GSController.GetSetting("chance");
 	this._auxiliary_limit = GSController.GetSetting("limit");
 	this._grid_spacing = GSController.GetSetting("spacing");
+	this._max_distance = GSController.GetSetting("distance");
 	this._only_raw_industries = GSController.GetSetting("_only_raw_industries");
 
 	// Indicate that all data structures has been initialized/restored.
@@ -263,7 +266,7 @@ function MainClass::GrowIndustry(id)
 		local center = GSIndustry.GetLocation(id);
 		local rect = Tile.MakeTileRectAroundTile(center, 1);
 		// TODO: try and insert free space
-		for (local i = 0; i < 16; i = i + 1) {
+		for (local i = 0; i < this._max_distance; i = i + 1) {
 			foreach (tile, _ in rect) {
 				local new_industry;
 				local industry_type = GSIndustry.GetIndustryType(id);
