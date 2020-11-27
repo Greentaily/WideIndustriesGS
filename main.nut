@@ -156,8 +156,10 @@ function MainClass::Start()
 function MainClass::Init()
 {
 
-	if (this._loaded_data != null) this._industries = this._loaded_data.rawget("industries");
-	else this._industries = GSIndustryList();
+	//if (this._loaded_data != null) this._industries = this._loaded_data.rawget("industries");
+	//else this._industries = GSIndustryList();
+
+	this._industries = GSIndustryList();
 
 	this._production_threshold = GSController.GetSetting("threshold");
 	this._transported_threshold = GSController.GetSetting("transported");
@@ -165,7 +167,7 @@ function MainClass::Init()
 	this._auxiliary_limit = GSController.GetSetting("limit");
 	this._grid_spacing = GSController.GetSetting("spacing");
 	this._max_distance = GSController.GetSetting("distance");
-	this._only_raw_industries = GSController.GetSetting("_only_raw_industries");
+	this._only_raw_industries = GSController.GetSetting("only_raw_industries");
 
 	// Indicate that all data structures has been initialized/restored.
 	this._init_done = true;
@@ -219,22 +221,22 @@ function MainClass::EndOfYear()
 function MainClass::ValidateIndustry(id)
 {
 	if (GSIndustry.GetAmountOfStationsAround(id) < 1) return false;
-	Log.Info(id + " passed stations check.", Log.LVL_SUBDECISIONS);
+	Log.Info(id + " passed stations check.", Log.LVL_SUB_DECISIONS);
 	// TODO: black hole industries (either ignore or check the amount of provided cargo)
 	// An industry may be neither processing nor raw.
 	// Examples are: power plant, bank, tropic lumber mills.
 	local type = GSIndustry.GetIndustryType(id);
 	if (this._only_raw_industries && !GSIndustryType.IsRawIndustry(type)) return false;
-	Log.Info(id + " passed type check.", Log.LVL_SUBDECISIONS);
+	Log.Info(id + " passed type check.", Log.LVL_SUB_DECISIONS);
 
 	/* Skip industry if its production does not meet threshold */
 	local cargoes = GSIndustryType.GetProducedCargo(type);
 	foreach (cargo, _ in cargoes) {
 		if (GSIndustry.GetLastMonthProduction(id, cargo) < this._production_threshold) return false;
-		Log.Info(id + " passed production check.", Log.LVL_SUBDECISIONS);
+		Log.Info(id + " passed production check.", Log.LVL_SUB_DECISIONS);
 
 		if (GSIndustry.GetLastMonthTransportedPercentage(id, cargo) < this._transported_threshold) return false;
-		Log.Info(id + " passed transported check.", Log.LVL_SUBDECISIONS);
+		Log.Info(id + " passed transported check.", Log.LVL_SUB_DECISIONS);
 	}
 
 	return true;
