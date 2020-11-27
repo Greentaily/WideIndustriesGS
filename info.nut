@@ -33,11 +33,11 @@ class FMainClass extends GSInfo {
 	function GetURL()			{ return "https://github.com/Greentaily/WideIndustriesGS"; }
 
 	function GetSettings() {
-		AddSetting({name = "log_level", description = "Debug: Log level (higher = print more)", easy_value = 3, medium_value = 3, hard_value = 3, custom_value = 3, flags = CONFIG_INGAME, min_value = 1, max_value = 3});
+		AddSetting({name = "log_level", description = "Debug: Log level (higher = print more)", easy_value = 1, medium_value = 1, hard_value = 1, custom_value = 1, flags = CONFIG_INGAME, min_value = 1, max_value = 3});
 		AddLabels("log_level", {_1 = "1: Info", _2 = "2: Verbose", _3 = "3: Debug" } );
 
 		AddSetting({name = "threshold", description = "Try and grow industries when they reach this production", easy_value = 512, medium_value = 1024, hard_value = 1024, custom_value = 512, flags = CONFIG_NONE, min_value = 1, max_value = 9999});
-		AddSetting({name = "chance", description = "Probability of growth (percent)", easy_value = 4, medium_value = 2, hard_value = 1, custom_value = 4, flags = CONFIG_NONE, min_value = 1, max_value = 100});
+		AddSetting({name = "chance", description = "Probability of growth (percent)", easy_value = 2, medium_value = 1, hard_value = 1, custom_value = 2, flags = CONFIG_NONE, min_value = 1, max_value = 100});
 		AddSetting({name = "limit", description = "Build a maximum of this many auxiliaries per industry", easy_value = 6, medium_value = 6, hard_value = 6, custom_value = 6, flags = CONFIG_NONE, min_value = 1, max_value = 99});
 		AddSetting({name = "spacing", description = "Leave this number of tiles between auxiliaries", easy_value = 0, medium_value = 2, hard_value = 4, custom_value = 0, flags = CONFIG_NONE, min_value = 0, max_value = 10});
 		AddSetting({name = "distance", description = "Maximum distance for auxiliaries", easy_value = 6, medium_value = 6, hard_value = 6, custom_value = 6, flags = CONFIG_NONE, min_value = 4, max_value = 64});
