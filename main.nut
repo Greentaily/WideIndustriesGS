@@ -56,6 +56,7 @@ class MainClass extends GSController
 	_industries = null;
 
 	_production_threshold = null;
+	_transported_threshold = null;
 	_production_chance = null;
 	_auxiliary_limit = null;
 	_grid_spacing = null;
@@ -79,6 +80,7 @@ class MainClass extends GSController
 		this._industries = null;
 
 		this._production_threshold = null;
+		this._transported_threshold = null;
 		this._production_chance = null;
 		this._auxiliary_limit = null;
 		this._grid_spacing = null;
@@ -158,6 +160,7 @@ function MainClass::Init()
 	else this._industries = GSIndustryList();
 
 	this._production_threshold = GSController.GetSetting("threshold");
+	this._transported_threshold = GSController.GetSetting("transported");
 	this._production_chance = GSController.GetSetting("chance");
 	this._auxiliary_limit = GSController.GetSetting("limit");
 	this._grid_spacing = GSController.GetSetting("spacing");
@@ -180,7 +183,7 @@ function MainClass::HandleEvents()
 
 		local ev_type = ev.GetEventType();
 		switch (ev_type) {
-			// TODO: When an industry opens, add it to the industry list
+			// TODO: when an industry opens, add it to the industry list
 			case GSEvent.ET_INDUSTRY_OPEN: {
 				/* local industry_event = GSEventIndustryOpen.Convert(ev);
 				local industry_id = industry_event.GetIndustryID();
@@ -215,19 +218,23 @@ function MainClass::EndOfYear()
  */
 function MainClass::ValidateIndustry(id)
 {
-	// TODO: Skip unserved industries
-	// TODO: Add cargo transported requirement
-
-	// TODO: Black hole industries (either ignore or check the amount of provided cargo)
+	if (GSIndustry.GetAmountOfStationsAround(id) < 1) return false;
+	Log.Info(id + " passed stations check.", Log.LVL_SUBDECISIONS);
+	// TODO: black hole industries (either ignore or check the amount of provided cargo)
 	// An industry may be neither processing nor raw.
 	// Examples are: power plant, bank, tropic lumber mills.
 	local type = GSIndustry.GetIndustryType(id);
 	if (this._only_raw_industries && !GSIndustryType.IsRawIndustry(type)) return false;
+	Log.Info(id + " passed type check.", Log.LVL_SUBDECISIONS);
 
-	/* Skip industry if its production does not meet the threshold value */
+	/* Skip industry if its production does not meet threshold */
 	local cargoes = GSIndustryType.GetProducedCargo(type);
 	foreach (cargo, _ in cargoes) {
 		if (GSIndustry.GetLastMonthProduction(id, cargo) < this._production_threshold) return false;
+		Log.Info(id + " passed production check.", Log.LVL_SUBDECISIONS);
+
+		if (GSIndustry.GetLastMonthTransportedPercentage(id, cargo) < this._transported_threshold) return false;
+		Log.Info(id + " passed transported check.", Log.LVL_SUBDECISIONS);
 	}
 
 	return true;
