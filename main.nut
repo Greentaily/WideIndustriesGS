@@ -180,24 +180,13 @@ function MainClass::HandleEvents()
 
 		local ev_type = ev.GetEventType();
 		switch (ev_type) {
-			case GSEvent.ET_COMPANY_NEW: {
-				local company_event = GSEventCompanyNew.Convert(ev);
-				local company_id = company_event.GetCompanyID();
-
-				// Here you can welcome the new company
-				Story.ShowMessage(company_id, GSText(GSText.STR_WELCOME, company_id));
-				break;
-			}
-
 			// TODO: When an industry opens, add it to the industry list
 			case GSEvent.ET_INDUSTRY_OPEN: {
-				local industry_event = GSEventIndustryOpen.Convert(ev);
+				/* local industry_event = GSEventIndustryOpen.Convert(ev);
 				local industry_id = industry_event.GetIndustryID();
-				// if (!this._auxiliary_industries.HasItem(industry_id)) 
-				break; 
+				if (!this._auxiliary_industries.HasItem(industry_id)) 
+				break; */
 			}
-
-			// other events ...
 		}
 	}
 }
@@ -208,18 +197,9 @@ function MainClass::HandleEvents()
 function MainClass::EndOfMonth()
 {
 	Log.Info("Trying to map and validate...", Log.LVL_DEBUG);
+	// TODO: skip during economic recession
 	local industry_list = this.map_list(this._industries, this.ValidateIndustry);
-	foreach(id, _ in industry_list) {
-		// TODO: skip during economic recession
-
-		// Skip unserved industries
-		// TODO: change this to percentage of cargo transported
-
-		// TODO: black hole industries (either ignore or check the amount of provided cargo)
-		// Skip industry if its production does not meet the threshold value
-
-		this.GrowIndustry(id);
-	}
+	foreach(id, _ in industry_list) this.GrowIndustry(id);
 }
 
 /*
@@ -235,22 +215,22 @@ function MainClass::EndOfYear()
  */
 function MainClass::ValidateIndustry(id)
 {
-	/*valid = GSList();
+	// TODO: Skip unserved industries
+	// TODO: Add cargo transported requirement
 
+	// TODO: Black hole industries (either ignore or check the amount of provided cargo)
+	// An industry may be neither processing nor raw.
+	// Examples are: power plant, bank, tropic lumber mills.
 	local type = GSIndustry.GetIndustryType(id);
+	if (this._only_raw_industries && !GSIndustryType.IsRawIndustry(type)) return false;
+
+	/* Skip industry if its production does not meet the threshold value */
 	local cargoes = GSIndustryType.GetProducedCargo(type);
+	foreach (cargo, _ in cargoes) {
+		if (GSIndustry.GetLastMonthProduction(id, cargo) < this._production_threshold) return false;
+	}
 
-		// An industry may be neither processing nor raw.
-		// Examples are: power plant, bank, tropic lumber mills.
-	    if (this._only_raw_industries && !GSIndustryType.IsRawIndustry(type)) continue;
-	}*/
-	
 	return true;
-
-	/*foreach (cargo, _ in cargoes) {
-		if (GSIndustry.GetLastMonthProduction(id, cargo) < this._production_threshold) return valid;
-	}*/
-
 }
 
 /*
@@ -303,8 +283,6 @@ function MainClass::Save()
 
 	return { 
 		some_data = 0
-		//industry_list = this._industry_list,
-		//auxiliary_industries = this._auxiliary_industries
 	};
 }
 
