@@ -1,6 +1,8 @@
 # Wide Industries GS
 An OpenTTD game script that makes served industries multiply as their production grows.
 
+<img src="pic.png" height="450">
+
 ## What it does
 This script will create more industries around existing served industries when they increase their production above a certain threshold, up to a specified limit.
 
