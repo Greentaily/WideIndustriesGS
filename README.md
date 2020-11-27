@@ -3,6 +3,8 @@ An OpenTTD game script that makes served industries multiply as their production
 
 <img src="pic.png" height="450">
 
+Tip: surrounding main industry with road (tracks) and placing stations on its opposite sides helps with catchment area.
+
 ## What it does
 This script will create more industries around existing served industries when they increase their production above a certain threshold, up to a specified limit.
 
